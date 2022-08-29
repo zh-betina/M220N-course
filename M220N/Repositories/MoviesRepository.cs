@@ -250,6 +250,9 @@ namespace M220N.Repositories
             {
                 matchStage,
                 sortStage,
+                skipStage,
+                limitStage,
+                facetStage
                 // add the remaining stages in the correct order
 
             };
