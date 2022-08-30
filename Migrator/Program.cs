@@ -18,7 +18,7 @@ namespace Migrator
         static IMongoCollection<Movie> _moviesCollection;
 
         // TODO: Update this connection string as needed.
-        static string mongoConnectionString = "";
+        static string mongoConnectionString = "mongodb+srv://m001-student:m001-mongodb-basics@sandbox.rjb0phh.mongodb.net/?retryWrites=true&w=majority";
         
         static async Task Main(string[] args)
         {
@@ -31,12 +31,12 @@ namespace Migrator
             if (datePipelineResults.Count > 0)
             {
                 BulkWriteResult<Movie> bulkWriteDatesResult = null;
-                // TODO Ticket: Call  _moviesCollection.BulkWriteAsync, passing in the
-                // datePipelineResults. You will need to use a ReplaceOneModel<Movie>
-                // (https://mongodb.github.io/mongo-csharp-driver/2.12/apidocs/html/T_MongoDB_Driver_ReplaceOneModel_1.htm).
-                //
-                // // bulkWriteDatesResult = await _moviesCollection.BulkWriteAsync(...
-
+                
+                bulkWriteDatesResult = await _moviesCollection.BulkWriteAsync(
+                    datePipelineResults.Select(updatedMovie => new ReplaceOneModel<Movie>(
+                        new FilterDefinitionBuilder<Movie>().Where(m => m.Id == updatedMovie.Id),
+                        updatedMovie)));
+                
                 Console.WriteLine($"{bulkWriteDatesResult.ProcessedRequests.Count} records updated.");
             }
 
@@ -51,6 +51,11 @@ namespace Migrator
                 // (https://mongodb.github.io/mongo-csharp-driver/2.12/apidocs/html/T_MongoDB_Driver_ReplaceOneModel_1.htm).
                 //
                 // // bulkWriteRatingsResult = await _moviesCollection.BulkWriteAsync(...
+
+                bulkWriteRatingsResult = await _moviesCollection.BulkWriteAsync(
+                    ratingPipelineResults.Select(updatedRating => new ReplaceOneModel<Movie>(
+                        new FilterDefinitionBuilder<Movie>().Where(movie => movie.Id == updatedRating.Id),
+                        updatedRating)));
 
                 Console.WriteLine($"{bulkWriteRatingsResult.ProcessedRequests.Count} records updated.");
             }

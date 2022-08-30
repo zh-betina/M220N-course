@@ -203,24 +203,16 @@ namespace M220N.Repositories
         {
             try
             {
-                /**
-                  Ticket: User Preferences
-            
-                  Update the "preferences" field in the corresponding user's document to
-                  reflect the new information in preferences.
-                */
 
                 UpdateResult updateResult = null;
                 // TODO Ticket: User Preferences
                 // Use the data in "preferences" to update the user's preferences.
-                //
-                // updateResult = await _usersCollection.UpdateOneAsync(
-                //    new BsonDocument(),
-                //    Builders<User>.Update.Set("TODO", preferences),
-                //    /* Be sure to pass a new UpdateOptions object here,
-                //       setting IsUpsert to false! */
-                //    new UpdateOptions(),
-                //    cancellationToken);
+                var filter = Builders<User>.Filter.Eq(u => u.Email, email);
+                updateResult = await _usersCollection.UpdateOneAsync(
+                    filter,
+                    Builders<User>.Update.Set("preferences", preferences),
+                    new UpdateOptions {IsUpsert = false},
+                    cancellationToken);
 
                 return updateResult.MatchedCount == 0
                     ? new UserResponse(false, "No user found with that email")
